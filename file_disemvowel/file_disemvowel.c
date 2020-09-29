@@ -10,7 +10,14 @@ bool is_vowel(char c) { //Checks the given character if its a vowel or not
 }
 
 int copy_non_vowels(int num_chars, char* in_buf, char* out_buf) {
-
+  int index = 0;
+  for (int i=0; i < num_chars - 1; i++) { //go through all charcters given
+    if (is_vowel(in_buf[i]) == false){ //checks if those characters are vowels or not in the given in_buf
+      out_buf[index] = in_buf[i]; //sets the out_buf to the items we found that are not vowels
+      index++;
+    }
+  }
+  return index;
 }
 
 void disemvowel(FILE* inputFile, FILE* outputFile) {
