@@ -19,6 +19,25 @@ void disemvowel(FILE* inputFile, FILE* outputFile) {
 
 int main(int argc, char *argv[]) {
 
+  FILE *inputFile;
+  FILE *outputFile;
+
+  if (argc == 1) { // if we arent given an actual files, we take in what ever the user puts in the terminal
+    inputFile = stdin;
+    outputFile = stdout;
+  }
+  else if (argc == 2) { //if we are only given 1 file, we take that as the input and read it.
+    inputFile = fopen(argv[1], "r");
+    outputFile = stdout;
+  }
+  else if (argc == 3){ //if given two arguments, we take and read the first and take and write the second
+    inputFile = fopen(argv[1], "r");
+    outputFile = fopen(argv[2], "w");
+  } else {
+    printf("You have given me too many arguments! Please only give me at most two arguments."); //if we get two many, lets user know what they need to do instead and exits
+    exit(0);
+  }
+  
   disemvowel(inputFile, outputFile);
   
   return 0;
