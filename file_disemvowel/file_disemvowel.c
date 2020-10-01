@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdbool.h>
+#include <stdlib.h>
 
 #define BUF_SIZE 1024
 
@@ -21,7 +22,21 @@ int copy_non_vowels(int num_chars, char* in_buf, char* out_buf) {
 }
 
 void disemvowel(FILE* inputFile, FILE* outputFile) {
+  char* in_buf = (char*)calloc(BUF_SIZE, sizeof(char)); // allocates memory for in_buf
+  char* out_buf = (char*)calloc(BUF_SIZE, sizeof(char)); //allocates memory for the out_buf like above
 
+  int b = BUF_SIZE;
+  int k = 0;
+
+  while (b == BUF_SIZE) {
+    b = (int)fread(in_buf, sizeof(char), BUF_SIZE, inputFile);
+    k = (int)copy_non_vowels(b, in_buf, out_buf);
+
+    fwrite(out_buf, sizeof(char), k, outputFile);
+  }
+  free(in_buf);
+  free(out_buf);
+  
 }
 
 int main(int argc, char *argv[]) {
@@ -46,6 +61,8 @@ int main(int argc, char *argv[]) {
   }
   
   disemvowel(inputFile, outputFile);
-  
+
+  fclose(inputFile); //closes the file
+  fclose(outputFile);
   return 0;
 }
