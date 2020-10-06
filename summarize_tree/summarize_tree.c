@@ -9,13 +9,17 @@
 static int num_dirs, num_regular;
 
 bool is_dir(const char* path) {
-  /*
-   * Use the stat() function (try "man 2 stat") to determine if the file
-   * referenced by path is a directory or not.  Call stat, and then use
-   * S_ISDIR to see if the file is a directory. Make sure you check the
-   * return value from stat in case there is a problem, e.g., maybe the
-   * the file doesn't actually exist.
-   */
+  struct stat *bstat = malloc(sizeof(struct stat)); // allocates memory
+
+  if (stat(path, bstat)) {
+    free(bstat);
+    return false;
+  } else {
+    bool is_dir = S_ISDIR(bstat -> st_mode);
+    free(bstat);
+    return is_dir;
+  }
+  
 }
 
 /* 
@@ -25,23 +29,30 @@ bool is_dir(const char* path) {
 void process_path(const char*);
 
 void process_directory(const char* path) {
-  /*
-   * Update the number of directories seen, use opendir() to open the
-   * directory, and then use readdir() to loop through the entries
-   * and process them. You have to be careful not to process the
-   * "." and ".." directory entries, or you'll end up spinning in
-   * (infinite) loops. Also make sure you closedir() when you're done.
-   *
-   * You'll also want to use chdir() to move into this new directory,
-   * with a matching call to chdir() to move back out of it when you're
-   * done.
-   */
+
+  chdir(path); //moves us to the path that we are suppose to be searching
+  struct dirent *dt;
+  DIR *dir = opendir("."); //opens our current directory
+
+  if (!dir) { // this just checks to see if the given directory doesnt exist.
+    return;
+  }
+
+  num_dirs++; //increments the number of directories by one.
+
+  while ((dt = readdir(dir)) != NULL){ //reads everything in the given directory until nothing is left to read.
+    if (strcmp(dt -> d_name,".") != 0 && strcmp(dt -> d_name,"..") != 0){ //checks if the two are the same
+      process_path(dt -> d_name);
+    }
+  }
+
+  closedir(dir); //closes the directory that we called
+  chdir(".."); //backs out of the directory
+  free(dt);
 }
 
 void process_file(const char* path) {
-  /*
-   * Update the number of regular files.
-   */
+  num_regular++;
 }
 
 void process_path(const char* path) {
@@ -55,7 +66,7 @@ void process_path(const char* path) {
 int main (int argc, char *argv[]) {
   // Ensure an argument was provided.
   if (argc != 2) {
-    printf ("Usage: %s <path>\n", argv[0]);
+    printf ("Usage: %s <path>\n", argv[0]); //prints if the script was called but no arguments were given
     printf ("       where <path> is the file or root of the tree you want to summarize.\n");
     return 1;
   }
