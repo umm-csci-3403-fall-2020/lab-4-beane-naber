@@ -2,9 +2,9 @@
 
 HERE=$(pwd) #gets current position
 
-PATH="$1" #sets input to $PATH
+path="$1" #sets input to $PATH
 
-cd "$PATH" || exit #cds into the called path
+cd "$path" || exit #cds into the called path
 
 NUM_OF_FILES=$( find . -type f | wc -l)
 
