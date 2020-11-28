@@ -1,0 +1,47 @@
+#include <stdio.h>
+#include <sys/stat.h>
+#include <stdbool.h>
+#include <stdlib.h>
+#include <dirent.h>
+#include <unistd.h>
+#include <string.h>
+#include <ftw.h>
+
+static int num_dirs, num_regular;
+
+static int callback(const char *fpath, const struct stat *sb, int typeflag)
+{
+    if (typeflag == FTW_D) // FTW_D: fpath is a directory
+    {
+        num_dirs++;
+    }
+
+    if (typeflag == FTW_F) // FTW_F: fpath is a file
+    {
+        num_regular++;
+    }
+
+    return 0;
+}
+
+#define MAX_FTW_DEPTH 16
+
+int main(int argc, char **argv)
+{
+    if (argc != 2)
+    {
+        printf("Usage: %s <path>\n", argv[0]); //prints if the script was called but no arguments were given
+        printf("       where <path> is the file or root of the tree you want to summarize.\n");
+        return 1;
+    }
+
+    num_dirs = 0;
+    num_regular = 0;
+
+    ftw(argv[1], callback, MAX_FTW_DEPTH);
+
+    printf("There were %d directories.\n", num_dirs);
+    printf("There were %d regular files.\n", num_regular);
+
+    return 0;
+}
